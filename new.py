@@ -1,11 +1,12 @@
-import dash
 
+import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 import pandas as pd
 
 # Load the data
-dc = pd.read_csv("avocado.csv")
+file_path = "avocado.csv"
+df = pd.read_csv(file_path)
 
 # Initialize the Dash app
 app = dash.Dash(__name__)
@@ -16,8 +17,8 @@ app.layout = html.Div([
     
     dcc.Dropdown(
         id='region-dropdown',
-        options=[{'label': region, 'value': region} for region in dc['region'].unique()],
-        value=dc['region'].unique()[0]  # Default value
+        options=[{'label': region, 'value': region} for region in df['region'].unique()],
+        value=df['region'].unique()[0]  # Default value
     ),
     
     dcc.Graph(id='price-graph'),
@@ -29,16 +30,11 @@ app.layout = html.Div([
     Input('region-dropdown', 'value')
 )
 def update_graph(selected_region):
-    filtered_data = dc[dc['region'] == selected_region]
+    filtered_data = df[df['region'] == selected_region]
     
     # Create a plotly figure
     figure = {
-    'data': [{
-        'x': filtered_data['Date'],  
-        'y': filtered_data['AveragePrice'],  
-        'type': 'bar',
-        'name': selected_region,
-    }],
+    'data': [{ 'x': filtered_data['Date'],'y': filtered_data['AveragePrice'], 'type': 'bar','name': selected_region}],
     'layout': {
         'title': f'Average Avocado Price in {selected_region}',
         'xaxis': {'title': 'Date'},
@@ -51,4 +47,3 @@ def update_graph(selected_region):
 # Run the app
 if __name__ == '__main__':
     app.run_server(debug=True)
-
